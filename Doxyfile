@@ -1,0 +1,16 @@
+PROJECT_NAME           = "CRegion"
+PROJECT_BRIEF          = "A public-domain region implementatin in C"
+OUTPUT_DIRECTORY       = build/
+JAVADOC_AUTOBRIEF      = YES
+TAB_SIZE               = 2
+OPTIMIZE_OUTPUT_FOR_C  = YES
+TYPEDEF_HIDES_STRUCT   = YES
+EXTRACT_STATIC         = YES
+HIDE_UNDOC_MEMBERS     = YES
+SORT_MEMBER_DOCS       = NO
+INPUT                  = README.md src/ test/
+USE_MDFILE_AS_MAINPAGE = README.md
+DISABLE_INDEX          = YES
+GENERATE_TREEVIEW      = YES
+ENUM_VALUES_PER_LINE   = 0
+GENERATE_LATEX         = NO
