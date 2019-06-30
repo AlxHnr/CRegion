@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 # Names of tests specified in the order to run.
-tests="safe-math region global-region"
+tests="safe-math region global-region alloc-growable"
 
 for test in $tests; do
   test -t 1 &&
