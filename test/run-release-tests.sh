@@ -11,11 +11,11 @@ build() { make -j"$(nproc)" all "${test_programs[@]}"; }
 CFLAGS="-Wall -Wextra -Werror -pedantic"
 CLANG_FLAGS="-Weverything -Wno-conversion -Wno-packed -Wno-padded"
 CLANG_FLAGS+=" -Wno-cast-align -Wno-shadow -Wno-assign-enum"
-CLANG_FLAGS+=" -Wno-switch-enum"
+CLANG_FLAGS+=" -Wno-switch-enum -Wno-extra-semi-stmt"
 GCC_FLAGS="--all-warnings --extra-warnings -W -Wabi -Waddress \
 -Waggressive-loop-optimizations -Wall -Warray-bounds -Wattributes \
 -Wbad-function-cast -Wbool-compare -Wbuiltin-macro-redefined -Wcast-align \
--Wchar-subscripts -Wchkp -Wclobbered -Wcomment -Wcomments \
+-Wchar-subscripts -Wclobbered -Wcomment -Wcomments \
 -Wcoverage-mismatch -Wdate-time -Wdeprecated -Wdeprecated-declarations \
 -Wdesignated-init -Wdisabled-optimization -Wdiscarded-array-qualifiers \
 -Wdiscarded-qualifiers -Wdiv-by-zero -Wdouble-promotion -Wempty-body \
