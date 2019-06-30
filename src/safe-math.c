@@ -5,6 +5,8 @@
 
 #include "safe-math.h"
 
+#include <stdint.h>
+
 #include "error-handling.h"
 
 /** Adds two sizes and terminates the program on overflows.

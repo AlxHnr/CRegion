@@ -4,6 +4,8 @@
 
 #include "safe-math.h"
 
+#include <stdint.h>
+
 #include "test.h"
 
 int main(void)

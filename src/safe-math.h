@@ -7,7 +7,6 @@
 #define CREGION_SRC_SAFE_MATH_H
 
 #include <stddef.h>
-#include <stdint.h>
 
 extern size_t CR_SafeAdd(size_t a, size_t b);
 extern size_t CR_SafeMultiply(size_t a, size_t b);

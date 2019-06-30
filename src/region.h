@@ -6,7 +6,6 @@
 #define CREGION_SRC_REGION_H
 
 #include <stddef.h>
-#include <stdbool.h>
 
 typedef struct CR_Region CR_Region;
 

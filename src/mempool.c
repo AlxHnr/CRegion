@@ -4,6 +4,8 @@
 
 #include "mempool.h"
 
+#include <stdbool.h>
+
 #include "safe-math.h"
 #include "static-assert.h"
 #include "error-handling.h"

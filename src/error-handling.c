@@ -5,10 +5,8 @@
 #include "error-handling.h"
 
 #include <stdio.h>
-#include <errno.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include <string.h>
 
 /** Prints an error message and terminates the program. It takes the same
   arguments as printf().
