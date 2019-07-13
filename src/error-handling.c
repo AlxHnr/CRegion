@@ -20,7 +20,7 @@ void CR_ExitFailure(const char *format, ...)
   va_list arguments;
   va_start(arguments, format);
 
-  fprintf(stderr, "nb: ");
+  fprintf(stderr, "CRegion: ");
   vfprintf(stderr, format, arguments);
   fprintf(stderr, "\n");
 
