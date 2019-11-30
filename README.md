@@ -137,6 +137,7 @@ Copy the following code into a file named `test/example.c` and add
 
 ```c
 #include "test.h"
+#include "region.h"
 
 int main(void)
 {
@@ -144,7 +145,8 @@ int main(void)
 
   assert_true(5 + 5 == 10);
 
-  assert_error(CR_EnsureCapacity(NULL, 0), "unable to allocate 0 bytes");
+  CR_Region *r = CR_RegionNew();
+  assert_true(r != NULL);
 
   testGroupEnd();
 }
