@@ -142,6 +142,28 @@ static void destroyAndCatchError(void *data)
   assert_error(CR_DestroyObject(data), "this is a test error");
 }
 
+/** Failable destructor which asserts that an object can't allocate itself
+  from its own mempool during destruction.
+
+  @param data Pointer to a pointer to the destroyed objects owning mempool.
+
+  @return Always zero to have a type signature different from fail-safe
+  destructors.
+*/
+static int allocateSelfFromMempool(void *data)
+{
+  void** ptr_to_own_mp = data;
+  CR_Mempool *mp = *ptr_to_own_mp;
+
+  void **allocated_ptr = checkedMPAlloc(mp);
+  assert_true(allocated_ptr != data);
+
+  /* Object must be releasable if destructor is not enabled. */
+  CR_DestroyObject(allocated_ptr);
+
+  return 0;
+}
+
 int main(void)
 {
   testGroupStart("creating memory pools");
@@ -306,6 +328,23 @@ int main(void)
     chunks[6].data = checkedMPAlloc(mp);
     chunks[6].size = object_size;
     assertNoOverlaps(chunks, 7);
+
+    CR_RegionRelease(r);
+  }
+  testGroupEnd();
+
+  testGroupStart("destructor runs before object gets returned to pool");
+  {
+    CR_Region *r = CR_RegionNew();
+
+    CR_Mempool *mp =
+      CR_MempoolNew(r, sizeof(void*), allocateSelfFromMempool, NULL);
+    assert_true(mp != NULL);
+
+    void **ptr_to_own_mp = checkedMPAlloc(mp);
+    *ptr_to_own_mp = mp;
+    CR_EnableObjectDestructor(ptr_to_own_mp);
+    CR_DestroyObject(ptr_to_own_mp);
 
     CR_RegionRelease(r);
   }

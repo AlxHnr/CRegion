@@ -196,6 +196,12 @@ void CR_DestroyObject(void *ptr)
   const bool destructor_enabled = (header->destructor_state == DS_enabled);
   header->destructor_state = DS_already_called;
 
+  /* Call destructor on object. */
+  if(destructor_enabled && mp->explicit_destructor != NULL)
+  {
+    mp->explicit_destructor(ptr);
+  }
+
   /* Detach header from allocated chunk list. */
   if(header->prev != NULL)
   {
@@ -218,11 +224,5 @@ void CR_DestroyObject(void *ptr)
   if(header->next != NULL)
   {
     header->next->prev = header;
-  }
-
-  /* Call destructor on object. */
-  if(destructor_enabled && mp->explicit_destructor != NULL)
-  {
-    mp->explicit_destructor(ptr);
   }
 }
