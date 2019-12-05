@@ -224,6 +224,31 @@ static void *allocFromChunkWithPadding(CR_Region *r, size_t size)
   return allocFromChunk(r, &r->aligned, CR_SafeAdd(size, padding));
 }
 
+#ifdef CREGION_ALWAYS_FRESH_MALLOC
+/** Allocate memory using malloc() and attach its lifetime to the given
+  region.
+
+  @param r Region to which the lifetime of the returned memory should be
+  bound.
+  @param size Amount of bytes to allocate.
+
+  @return Requested memory which should not be freed by the caller. Will
+  never be NULL.
+*/
+static void *rawMallocWithRegion(CR_Region *r, size_t size)
+{
+  if(size == 0)
+  {
+    CR_ExitFailure("unable to allocate 0 bytes");
+  }
+
+  void *data = checkedMalloc(size);
+  CR_RegionAttach(r, free, data);
+
+  return data;
+}
+#endif
+
 /** Allocates memory from the given region. The returned memory will be
   aligned to an 8 byte boundary. This equals the size of the largest
   official C99 data type uint64_t.
@@ -238,14 +263,21 @@ static void *allocFromChunkWithPadding(CR_Region *r, size_t size)
 */
 void *CR_RegionAlloc(CR_Region *r, size_t size)
 {
+#ifdef CREGION_ALWAYS_FRESH_MALLOC
+  return rawMallocWithRegion(r, size);
+#else
   return allocFromChunkWithPadding(r, size);
+#endif
 }
 
-/** Like CR_RegionAlloc() but without aligning the memory. Use this for
-  allocating strings. */
+/** Like CR_RegionAlloc() but without aligning memory. */
 void *CR_RegionAllocUnaligned(CR_Region *r, size_t size)
 {
+#ifdef CREGION_ALWAYS_FRESH_MALLOC
+  return rawMallocWithRegion(r, size);
+#else
   return allocFromChunk(r, &r->unaligned, size);
+#endif
 }
 
 /** Ensures that the given callback gets called when the specified region
@@ -260,7 +292,7 @@ void *CR_RegionAllocUnaligned(CR_Region *r, size_t size)
 void CR_RegionAttach(CR_Region *r, CR_ReleaseCallback *callback, void *data)
 {
   /* Store the callback inside the region as the current pending
-     callback. This is required in case the following CR_RegionAlloc()
+     callback. This is required in case the following allocation
      fails and terminates the program. */
   r->pending_callback = callback;
   r->pending_callback_data = data;

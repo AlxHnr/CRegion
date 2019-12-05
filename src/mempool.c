@@ -56,6 +56,24 @@ struct CR_Mempool
   Header *released_chunks;
 };
 
+#ifdef CREGION_ALWAYS_FRESH_MALLOC
+#include <stdlib.h>
+
+/** Free all chunks allocated by the given mempool. */
+static void FREE_ALL_CHUNKS_IF_REQUIRED(CR_Mempool *mp)
+{
+  Header *chunk = mp->allocated_chunks;
+  while(chunk != NULL)
+  {
+    Header *next = chunk->next;
+    free(chunk);
+    chunk = next;
+  }
+}
+#else
+#define FREE_ALL_CHUNKS_IF_REQUIRED(mp) ((void)(mp))
+#endif
+
 /** Destroys all objects in the given mempool using the implicit
   destructor. */
 static void destroyObjects(void *data)
@@ -63,6 +81,7 @@ static void destroyObjects(void *data)
   CR_Mempool *mp = data;
   if(mp->implicit_destructor == NULL)
   {
+    FREE_ALL_CHUNKS_IF_REQUIRED(mp);
     return;
   }
 
@@ -74,6 +93,8 @@ static void destroyObjects(void *data)
       mp->implicit_destructor(element + 1);
     }
   }
+
+  FREE_ALL_CHUNKS_IF_REQUIRED(mp);
 }
 
 /** Creates a new mempool.
@@ -124,6 +145,15 @@ CR_Mempool *CR_MempoolNew(CR_Region *r, size_t object_size,
 */
 static void *getAvailableChunk(CR_Mempool *mp)
 {
+#ifdef CREGION_ALWAYS_FRESH_MALLOC
+  void *data = malloc(mp->chunk_size);
+  if(data == NULL)
+  {
+    CR_ExitFailure("failed to allocate %zu bytes", mp->chunk_size);
+  }
+
+  return data;
+#else
   if(mp->released_chunks == NULL)
   {
     return CR_RegionAlloc(mp->r, mp->chunk_size);
@@ -140,6 +170,7 @@ static void *getAvailableChunk(CR_Mempool *mp)
 
     return chunk;
   }
+#endif
 }
 
 /** Allocates from the given mempool.
@@ -216,6 +247,9 @@ void CR_DestroyObject(void *ptr)
     mp->allocated_chunks = mp->allocated_chunks->next;
   }
 
+#ifdef CREGION_ALWAYS_FRESH_MALLOC
+  free(header);
+#else
   /* Prepend header to released chunk list. */
   header->prev = NULL;
   header->next = mp->released_chunks;
@@ -225,4 +259,5 @@ void CR_DestroyObject(void *ptr)
   {
     header->next->prev = header;
   }
+#endif
 }

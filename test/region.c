@@ -150,8 +150,10 @@ static void testCreateAndRelease(const char *group_name,
 
     assert_error(CR_RegionAlloc(r, 0), "unable to allocate 0 bytes");
     assert_error(CR_RegionAllocUnaligned(r, 0), "unable to allocate 0 bytes");
+#ifndef CREGION_ALWAYS_FRESH_MALLOC
     assert_error(CR_RegionAlloc(r, SIZE_MAX), "overflow calculating object size");
     assert_error(CR_RegionAllocUnaligned(r, SIZE_MAX), "overflow calculating object size");
+#endif
 
     chunks[1].size = 1;
     chunks[1].data = alloc_function(r, chunks[1].size);
@@ -277,6 +279,7 @@ int main(void)
   }
   testGroupEnd();
 
+#ifndef CREGION_ALWAYS_FRESH_MALLOC
   testGroupStart("padding of memory 1");
   {
     CR_Region *r = CR_RegionNew();
@@ -344,6 +347,7 @@ int main(void)
     CR_RegionRelease(r);
   }
   testGroupEnd();
+#endif
 
   testRandomAlloc("random aligned allocations from one region",
                   "random aligned allocations from random regions",

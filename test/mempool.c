@@ -244,6 +244,7 @@ int main(void)
   }
   testGroupEnd();
 
+#ifndef CREGION_ALWAYS_FRESH_MALLOC
   testGroupStart("passing objects to CR_DestroyObject() twice");
   {
     CR_Region *r = CR_RegionNew();
@@ -332,6 +333,7 @@ int main(void)
     CR_RegionRelease(r);
   }
   testGroupEnd();
+#endif
 
   testGroupStart("destructor runs before object gets returned to pool");
   {
