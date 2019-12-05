@@ -125,29 +125,3 @@ file->stream = openStream("/dev/null");
 CR_EnableObjectDestructor(file); /* Must be done explicitly once the
                                     object is fully constructed */
 ```
-
-## Testing
-
-The source code comes with its own testing framework.
-
-### Example
-
-Copy the following code into a file named `test/example.c` and add
-`example` to `test/run-tests.sh`. Then run `make clean` and `make test`.
-
-```c
-#include "test.h"
-#include "region.h"
-
-int main(void)
-{
-  testGroupStart("some asserts");
-
-  assert_true(5 + 5 == 10);
-
-  CR_Region *r = CR_RegionNew();
-  assert_true(r != NULL);
-
-  testGroupEnd();
-}
-```
