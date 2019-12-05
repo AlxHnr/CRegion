@@ -59,9 +59,18 @@ make clean
 CC=clang CFLAGS+=" $CLANG_FLAGS" build
 CC=clang CFLAGS+=" $CLANG_FLAGS" make test
 
+for sanitizer in address undefined; do
+(
+  make clean
+  flags="-O0 -ggdb -fsanitize=$sanitizer -fno-sanitize-recover=all"
+  CC=gcc CFLAGS+=" $flags" LDFLAGS="$flags" build
+  CC=gcc CFLAGS+=" $flags" LDFLAGS="$flags" make test
+)
+done
+
 # Run tests with valgrind.
 make clean
-CC=gcc CFLAGS+=" -g -O0" build
+CC=gcc CFLAGS+=" -O0 -ggdb" build
 
 find build/ -type f -executable \
   -exec mv "{}" "{}-bin" ";" \
@@ -88,15 +97,14 @@ for file in build/valgrind/*; do
 done
 
 make clean
-CFLAGS+=" -g -O0" scan-build make -j"$(nproc)" all "${test_programs[@]}"
+CFLAGS+=" -O0 -ggdb" scan-build make -j"$(nproc)" all "${test_programs[@]}"
 make clean
 
 run_cppcheck()
 {
-  ! cppcheck --quiet --std=c99 --std=posix --enable=all "$@" -Isrc/ src/ test/ \
+  ! cppcheck --quiet --std=c99 --enable=all "$@" -Isrc/ src/ test/ \
     --suppress="missingIncludeSystem:*" \
-    --suppress="redundantAssignment:test/*.c" \
-    --suppress="shadowVar:test/global-region.c" |&
+    --suppress="redundantAssignment:test/*.c" |&
     grep --color=auto .
 }
 
