@@ -206,6 +206,24 @@ static void *allocFromChunk(CR_Region *r, Chunk *chunk, size_t size)
   }
 }
 
+/** Allocate from the given region. The requested amount of bytes will be
+  rounded up to the next multiple of sizeof(uint64_t). This ensures that
+  subsequent allocations are aligned. If the current chunk in the specified
+  region is too small, a new one will be created.
+
+  @param r Region from which should be allocated.
+  @param size Amount of bytes to allocate.
+
+  @return Allocated memory. Will never be NULL.
+*/
+static void *allocFromChunkWithPadding(CR_Region *r, size_t size)
+{
+  const size_t padding =
+    (alignment - (size & (alignment - 1))) & (alignment - 1);
+
+  return allocFromChunk(r, &r->aligned, CR_SafeAdd(size, padding));
+}
+
 /** Allocates memory from the given region. The returned memory will be
   aligned to an 8 byte boundary. This equals the size of the largest
   official C99 data type uint64_t.
@@ -220,10 +238,7 @@ static void *allocFromChunk(CR_Region *r, Chunk *chunk, size_t size)
 */
 void *CR_RegionAlloc(CR_Region *r, size_t size)
 {
-  const size_t padding =
-    (alignment - (size & (alignment - 1))) & (alignment - 1);
-
-  return allocFromChunk(r, &r->aligned, CR_SafeAdd(size, padding));
+  return allocFromChunkWithPadding(r, size);
 }
 
 /** Like CR_RegionAlloc() but without aligning the memory. Use this for
@@ -250,7 +265,7 @@ void CR_RegionAttach(CR_Region *r, CR_ReleaseCallback *callback, void *data)
   r->pending_callback = callback;
   r->pending_callback_data = data;
 
-  CallbackList *element = CR_RegionAlloc(r, sizeof *element);
+  CallbackList *element = allocFromChunkWithPadding(r, sizeof *element);
 
   r->pending_callback = NULL;
   r->pending_callback_data = NULL;
