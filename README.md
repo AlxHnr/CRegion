@@ -125,3 +125,24 @@ file->stream = openStream("/dev/null");
 CR_EnableObjectDestructor(file); /* Must be done explicitly once the
                                     object is fully constructed */
 ```
+
+# Debugging and sanitizing
+
+This library allocates mostly from continuous memory, which makes it
+impossible for debugging tools to detect overflows. In order to use such
+tools, continuous memory has to be disabled. This can be achieved by
+defining `CREGION_ALWAYS_FRESH_MALLOC` during compilation. Doing so causes
+CRegion to return new, fresh memory from raw malloc on every single
+allocation.
+
+## Caveats
+
+Runtime leak-detectors are not useful because CRegion will clean up
+everything when the program terminates. Changing this behaviour would
+require invasive modifications to the library _and_ to code using this
+library. This would break the way CRegion is intended to be used.
+
+Memory allocated from the mempool and growable arrays have additional data
+prepended to them. Accidental writes to this data will not be detected by
+sanitizers. ASAN provides a poisoning API to solve this issue, but this
+would require cluttering the library with poison/unpoison calls.
