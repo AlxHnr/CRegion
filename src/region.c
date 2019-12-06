@@ -36,7 +36,7 @@ struct ChunkList
 
 typedef struct
 {
-  char *chunk; /**< The allocated memory chunk. */
+  unsigned char *chunk; /**< Allocated bytes. */
   size_t bytes_used; /**< The amount of used bytes in the chunk. */
   size_t capacity; /**< The total capacity of the chunk. */
   size_t next_chunk_size; /**< The size of the next chunk. */
@@ -123,7 +123,7 @@ CR_Region *CR_RegionNew(void)
   ChunkList *element = checkedMalloc(first_chunk_size);
   CR_Region *r = (CR_Region *)(element + 1);
 
-  r->aligned.chunk = (char *)element;
+  r->aligned.chunk = (unsigned char *)element;
   r->aligned.bytes_used = (sizeof *element) + (sizeof *r);
   r->aligned.capacity = first_chunk_size/2;
   r->aligned.next_chunk_size = first_chunk_size * 2;
@@ -184,7 +184,7 @@ static void *allocFromChunk(CR_Region *r, Chunk *chunk, size_t size)
   {
     ChunkList *element = checkedMalloc(chunk->next_chunk_size);
 
-    chunk->chunk = (char *)element;
+    chunk->chunk = (unsigned char *)element;
     chunk->bytes_used = sizeof *element;
     chunk->capacity = chunk->next_chunk_size;
 
