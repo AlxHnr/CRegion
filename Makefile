@@ -1,4 +1,4 @@
-CFLAGS           += -std=c99 -D_XOPEN_SOURCE=600 -D_FILE_OFFSET_BITS=64
+CFLAGS           += -std=c99
 OBJECTS          := $(patsubst src/%.c,build/%.o,$(wildcard src/*.c))
 TEST_PROGRAMS    := $(shell grep -l '^int main' test/*.c)
 TEST_LIB_OBJECTS := $(filter-out $(TEST_PROGRAMS),$(wildcard test/*.c))
@@ -16,7 +16,10 @@ build/dependencies.makefile:
 	$(CC) -MM -Isrc/ test/*.c | sed -r 's,^(\S+:),build/test/\1,g' >> $@
 
 build/%.o:
-	$(CC) $(CFLAGS) -Isrc/ -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
+
+build/test/%.o:
+	$(CC) $(CFLAGS) -D_POSIX_C_SOURCE=200112L -Isrc/ -c $< -o $@
 
 build/test/%: build/test/%.o $(TEST_LIB_OBJECTS)
 	$(CC) $^ $(LDFLAGS) -o $@
