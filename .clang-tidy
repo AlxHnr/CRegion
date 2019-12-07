@@ -1,0 +1,4 @@
+---
+Checks: '*,-clang-diagnostic-empty-translation-unit,-llvm-header-guard,-clang-analyzer-valist.Uninitialized,-readability-else-after-return'
+WarningsAsErrors: '*'
+...

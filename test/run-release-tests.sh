@@ -108,6 +108,9 @@ run_cppcheck()
     grep --color=auto .
 }
 
+echo "Running clang-tidy ..."
+clang-tidy src/*.h src/*.c
+
 echo "Running cppcheck ..."
 run_cppcheck --platform=unix32
 run_cppcheck --platform=unix64
