@@ -6,11 +6,11 @@
 
 #include <stdlib.h>
 
-#include "safe-math.h"
-#include "global-region.h"
-#include "static-assert.h"
-#include "error-handling.h"
 #include "address-sanitizer.h"
+#include "error-handling.h"
+#include "global-region.h"
+#include "safe-math.h"
+#include "static-assert.h"
 
 /** A header containing metadata for resizable fat pointers. */
 typedef struct

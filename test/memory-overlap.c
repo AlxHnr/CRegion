@@ -4,8 +4,8 @@
 
 #include "memory-overlap.h"
 
-#include "test.h"
 #include "error-handling.h"
+#include "test.h"
 
 /** Asserts that the given memory chunks don't overlap.
 

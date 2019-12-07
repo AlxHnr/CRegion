@@ -7,9 +7,9 @@
 #define CREGION_TEST_TEST_H
 
 #include <errno.h>
-#include <string.h>
 #include <setjmp.h>
 #include <stdbool.h>
+#include <string.h>
 
 /* This test suite uses longjump to catch and handle calls to
    CR_ExitFailure(). Unfortunately GCC tries to inline as much as possible

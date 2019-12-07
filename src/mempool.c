@@ -6,10 +6,10 @@
 
 #include <stdbool.h>
 
+#include "address-sanitizer.h"
+#include "error-handling.h"
 #include "safe-math.h"
 #include "static-assert.h"
-#include "error-handling.h"
-#include "address-sanitizer.h"
 
 /** Contains the state of a destructor. */
 typedef enum

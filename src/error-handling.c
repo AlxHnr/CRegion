@@ -4,8 +4,8 @@
 
 #include "error-handling.h"
 
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 /** Prints an error message and terminates the program. It takes the same

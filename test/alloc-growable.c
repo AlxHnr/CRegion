@@ -7,11 +7,11 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "test.h"
+#include "error-handling.h"
 #include "random.h"
 #include "region.h"
 #include "safe-math.h"
-#include "error-handling.h"
+#include "test.h"
 
 /** Asserts certain properties of the given memory. */
 static void checkPtr(void *ptr)

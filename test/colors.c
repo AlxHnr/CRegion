@@ -6,8 +6,8 @@
 
 #include <errno.h>
 #include <stdarg.h>
-#include <unistd.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #include "error-handling.h"
 

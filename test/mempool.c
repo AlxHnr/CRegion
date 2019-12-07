@@ -6,11 +6,11 @@
 
 #include <stdint.h>
 
-#include "test.h"
-#include "random.h"
-#include "safe-math.h"
 #include "error-handling.h"
 #include "memory-overlap.h"
+#include "random.h"
+#include "safe-math.h"
+#include "test.h"
 
 #define chunks_capacity 5000
 static AllocatedChunk chunks[chunks_capacity];

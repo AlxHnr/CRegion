@@ -4,15 +4,15 @@
 
 #include "region.h"
 
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
-#include "test.h"
-#include "random.h"
-#include "safe-math.h"
 #include "error-handling.h"
 #include "memory-overlap.h"
+#include "random.h"
+#include "safe-math.h"
+#include "test.h"
 
 #define chunks_capacity 10000
 static AllocatedChunk chunks[chunks_capacity];

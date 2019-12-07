@@ -4,13 +4,13 @@
 
 #include "region.h"
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
+#include "error-handling.h"
 #include "safe-math.h"
 #include "static-assert.h"
-#include "error-handling.h"
 
 #define alignment sizeof(uint64_t)
 #define first_chunk_size 1024

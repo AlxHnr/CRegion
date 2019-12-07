@@ -4,9 +4,9 @@
 
 #include "global-region.h"
 
-#include "test.h"
 #include "random.h"
 #include "safe-math.h"
+#include "test.h"
 
 static void printTestGroupEnd(void *data)
 {
