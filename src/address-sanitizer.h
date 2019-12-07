@@ -1,5 +1,5 @@
 /** @file
- * Contains macros for augmenting address sanitizers.
+ * Contains macros for ASAN support.
  */
 
 #ifndef CREGION_SRC_ADDRESS_SANITIZER_H
