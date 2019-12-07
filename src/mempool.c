@@ -62,12 +62,12 @@ struct CR_Mempool
 /** Free all chunks allocated by the given mempool. */
 static void FREE_ALL_CHUNKS_IF_REQUIRED(CR_Mempool *mp)
 {
-  Header *chunk = mp->allocated_chunks;
-  while(chunk != NULL)
+  Header *header = mp->allocated_chunks;
+  while(header != NULL)
   {
-    Header *next = chunk->next;
-    free(chunk);
-    chunk = next;
+    Header *next = header->next;
+    free(header);
+    header = next;
   }
 }
 #else
@@ -85,12 +85,12 @@ static void destroyObjects(void *data)
     return;
   }
 
-  for(Header *element = mp->allocated_chunks;
-      element != NULL; element = element->next)
+  for(Header *header = mp->allocated_chunks;
+      header != NULL; header = header->next)
   {
-    if(element->destructor_state == DS_enabled)
+    if(header->destructor_state == DS_enabled)
     {
-      mp->implicit_destructor(element + 1);
+      mp->implicit_destructor(header + 1);
     }
   }
 
