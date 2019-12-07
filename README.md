@@ -76,7 +76,7 @@ CR_DestroyObject(value);
 ```
 
 Objects allocated by the pool can have destructors. To do so, two callbacks
-have to be provided to the mempool.
+can to be provided to the mempool.
 
 The first one will be called when destroying objects explicitly by using
 `CR_DestroyObject()`. This callback is allowed to handle errors by calling
@@ -116,13 +116,12 @@ void freeFile(void *data)
   (void)syncToDiskAndClose(file);
 }
 
-CR_Mempool *file_pool = CR_MempoolNew(r, sizeof(FileHandle),
-                                      closeFile, freeFile);
+CR_Mempool *file_pool = CR_MempoolNew(r, sizeof(FileHandle), closeFile, freeFile);
 
 FileHandle *file = CR_MempoolAlloc(file_pool);
 file->stream = openStream("/dev/null");
 
-CR_EnableObjectDestructor(file); /* Must be done explicitly once the
+CR_EnableObjectDestructor(file); /* Must be done explicitly after the
                                     object is fully constructed */
 ```
 
@@ -140,4 +139,5 @@ allocation.
 Runtime leak-detectors are not useful because CRegion will clean up
 everything when the program terminates. Changing this behaviour would
 require invasive modifications to the library _and_ to code using this
-library. This would break the way CRegion is intended to be used.
+library. This would break the way CRegion is intended to be used. CRegion
+is not thread-safe.
