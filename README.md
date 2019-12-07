@@ -141,8 +141,3 @@ Runtime leak-detectors are not useful because CRegion will clean up
 everything when the program terminates. Changing this behaviour would
 require invasive modifications to the library _and_ to code using this
 library. This would break the way CRegion is intended to be used.
-
-Memory allocated from the mempool and growable arrays have additional data
-prepended to them. Accidental writes to this data will not be detected by
-sanitizers. ASAN provides a poisoning API to solve this issue, but this
-would require cluttering the library with poison/unpoison calls.
