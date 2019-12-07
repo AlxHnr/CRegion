@@ -20,7 +20,7 @@ static void checkPtr(void *ptr)
 
   if((size_t)ptr % 8 != 0)
   {
-    CR_ExitFailure("allocated pointer is not aligned properly: %p", (void *)ptr);
+    CR_ExitFailure("allocated pointer is not aligned properly: %p", ptr);
   }
 }
 
@@ -45,7 +45,7 @@ static void testFromRegion(size_t initial_size, PtrTestFunction *function)
 
 /** Asserts that the given memory with the specified size is filled with
   the given value. */
-static void assertPtrContainsValue(char *ptr, size_t size, char value)
+static void assertPtrContainsValue(const char *ptr, size_t size, char value)
 {
   for(size_t index = 0; index < size; index++)
   {

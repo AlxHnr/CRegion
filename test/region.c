@@ -178,7 +178,7 @@ static void testRandomAlloc(const char *group_name_one,
       CR_Region *r = checkedRegion();
       chunks_used = sRand() % 2500 + 20;
       assert_true(chunks_used < chunks_capacity);
-      const char value = sRand() % INT8_MAX;
+      const int value = sRand() % INT8_MAX;
 
       for(size_t index = 0; index < chunks_used; index++)
       {
@@ -207,7 +207,7 @@ static void testRandomAlloc(const char *group_name_one,
     {
       chunks_used = sRand() % 2500 + 20;
       assert_true(chunks_used < chunks_capacity);
-      const char value = sRand() % INT8_MAX;
+      const int value = sRand() % INT8_MAX;
 
       for(size_t index = 0; index < chunks_used; index++)
       {

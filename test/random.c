@@ -5,6 +5,7 @@
 #include "random.h"
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
@@ -17,7 +18,7 @@ int sRand(void)
   static bool already_seeded = false;
   if(already_seeded == false)
   {
-    srand((time(NULL) << 9) + getpid());
+    srand(((uint32_t)time(NULL) << 9U) + getpid());
     already_seeded = true;
   }
 
