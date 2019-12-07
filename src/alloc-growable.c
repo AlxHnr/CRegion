@@ -10,6 +10,7 @@
 #include "global-region.h"
 #include "static-assert.h"
 #include "error-handling.h"
+#include "address-sanitizer.h"
 
 /** A header containing metadata for resizable fat pointers. */
 typedef struct
@@ -57,6 +58,7 @@ void *CR_RegionAllocGrowable(CR_Region *r, size_t size)
 
   CR_RegionAttach(r, freeAttachedPointer, attached_pointer);
 
+  ASAN_POISON_MEMORY_REGION(header, sizeof(Header));
   return header + 1;
 }
 
@@ -81,8 +83,10 @@ void *CR_EnsureCapacity(void *ptr, size_t size)
   }
 
   Header *header = (Header *)ptr - 1;
+  ASAN_UNPOISON_MEMORY_REGION(header, sizeof(Header));
   if(size <= header->capacity)
   {
+    ASAN_POISON_MEMORY_REGION(header, sizeof(Header));
     return ptr;
   }
 
@@ -96,5 +100,6 @@ void *CR_EnsureCapacity(void *ptr, size_t size)
   *reallocated_header->attached_pointer = reallocated_header;
   reallocated_header->capacity = size;
 
+  ASAN_POISON_MEMORY_REGION(reallocated_header, sizeof(Header));
   return reallocated_header + 1;
 }
