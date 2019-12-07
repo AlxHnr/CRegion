@@ -9,6 +9,7 @@
 #include "safe-math.h"
 #include "static-assert.h"
 #include "error-handling.h"
+#include "address-sanitizer.h"
 
 /** Contains the state of a destructor. */
 typedef enum
@@ -65,6 +66,7 @@ static void FREE_ALL_CHUNKS_IF_REQUIRED(CR_Mempool *mp)
   Header *header = mp->allocated_chunks;
   while(header != NULL)
   {
+    ASAN_UNPOISON_MEMORY_REGION(header, sizeof(Header));
     Header *next = header->next;
     free(header);
     header = next;
@@ -88,9 +90,12 @@ static void destroyObjects(void *data)
   for(Header *header = mp->allocated_chunks;
       header != NULL; header = header->next)
   {
+    ASAN_UNPOISON_MEMORY_REGION(header, sizeof(Header));
     if(header->destructor_state == DS_enabled)
     {
+      ASAN_POISON_MEMORY_REGION(header, sizeof(Header));
       mp->implicit_destructor(header + 1);
+      ASAN_UNPOISON_MEMORY_REGION(header, sizeof(Header));
     }
   }
 
@@ -161,11 +166,14 @@ static void *getAvailableChunk(CR_Mempool *mp)
   else
   {
     void *chunk = mp->released_chunks;
+    ASAN_UNPOISON_MEMORY_REGION(mp->released_chunks, mp->chunk_size);
 
     mp->released_chunks = mp->released_chunks->next;
     if(mp->released_chunks != NULL)
     {
+      ASAN_UNPOISON_MEMORY_REGION(mp->released_chunks, sizeof(Header));
       mp->released_chunks->prev = NULL;
+      ASAN_POISON_MEMORY_REGION(mp->released_chunks, sizeof(Header));
     }
 
     return chunk;
@@ -193,9 +201,12 @@ void *CR_MempoolAlloc(CR_Mempool *mp)
 
   if(header->next != NULL)
   {
+    ASAN_UNPOISON_MEMORY_REGION(header->next, sizeof(Header));
     header->next->prev = header;
+    ASAN_POISON_MEMORY_REGION(header->next, sizeof(Header));
   }
 
+  ASAN_POISON_MEMORY_REGION(header, sizeof(Header));
   return header + 1;
 }
 
@@ -207,7 +218,9 @@ void *CR_MempoolAlloc(CR_Mempool *mp)
 void CR_EnableObjectDestructor(void *ptr)
 {
   Header *header = (Header *)ptr - 1;
+  ASAN_UNPOISON_MEMORY_REGION(header, sizeof(Header));
   header->destructor_state = DS_enabled;
+  ASAN_POISON_MEMORY_REGION(header, sizeof(Header));
 }
 
 /** Destroys the given object and calls the explicit destructor, if enabled
@@ -218,6 +231,7 @@ void CR_EnableObjectDestructor(void *ptr)
 void CR_DestroyObject(void *ptr)
 {
   Header *header = (Header *)ptr - 1;
+  ASAN_UNPOISON_MEMORY_REGION(header, sizeof(Header));
   CR_Mempool *mp = header->mp;
 
   if(header->destructor_state == DS_already_called)
@@ -230,17 +244,23 @@ void CR_DestroyObject(void *ptr)
   /* Call destructor on object. */
   if(destructor_enabled && mp->explicit_destructor != NULL)
   {
+    ASAN_POISON_MEMORY_REGION(header, sizeof(Header));
     mp->explicit_destructor(ptr);
+    ASAN_UNPOISON_MEMORY_REGION(header, sizeof(Header));
   }
 
   /* Detach header from allocated chunk list. */
   if(header->prev != NULL)
   {
+    ASAN_UNPOISON_MEMORY_REGION(header->prev, sizeof(Header));
     header->prev->next = header->next;
+    ASAN_POISON_MEMORY_REGION(header->prev, sizeof(Header));
   }
   if(header->next != NULL)
   {
+    ASAN_UNPOISON_MEMORY_REGION(header->next, sizeof(Header));
     header->next->prev = header->prev;
+    ASAN_POISON_MEMORY_REGION(header->next, sizeof(Header));
   }
   if(header == mp->allocated_chunks)
   {
@@ -257,7 +277,10 @@ void CR_DestroyObject(void *ptr)
 
   if(header->next != NULL)
   {
+    ASAN_UNPOISON_MEMORY_REGION(header->next, sizeof(Header));
     header->next->prev = header;
+    ASAN_POISON_MEMORY_REGION(header->next, sizeof(Header));
   }
+  ASAN_POISON_MEMORY_REGION(mp->released_chunks, mp->chunk_size);
 #endif
 }
