@@ -10,7 +10,7 @@
 /** Represents an allocated memory chunk. */
 typedef struct
 {
-  char *data;
+  unsigned char *data;
   size_t size;
 }AllocatedChunk;
 

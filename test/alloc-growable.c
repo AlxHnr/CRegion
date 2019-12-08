@@ -25,7 +25,7 @@ static void checkPtr(void *ptr)
 }
 
 /** A function type which checks the given memory. */
-typedef void PtrTestFunction(char *ptr);
+typedef void PtrTestFunction(unsigned char *ptr);
 
 /** Allocates memory from a fresh region and passes it to the given
   function. It takes the size of the first allocation as parameter. */
@@ -34,9 +34,9 @@ static void testFromRegion(size_t initial_size, PtrTestFunction *function)
   CR_Region *r = CR_RegionNew();
   assert_true(r != NULL);
 
-  char *ptr = CR_RegionAllocGrowable(r, initial_size);
+  unsigned char *ptr = CR_RegionAllocGrowable(r, initial_size);
   checkPtr(ptr);
-  memset(ptr, sRand() % INT8_MAX, initial_size);
+  memset(ptr, sRand() % UINT8_MAX, initial_size);
 
   function(ptr);
 
@@ -45,7 +45,7 @@ static void testFromRegion(size_t initial_size, PtrTestFunction *function)
 
 /** Asserts that the given memory with the specified size is filled with
   the given value. */
-static void assertPtrContainsValue(const char *ptr, size_t size, char value)
+static void assertPtrContainsValue(const unsigned char *ptr, size_t size, char value)
 {
   for(size_t index = 0; index < size; index++)
   {
@@ -53,7 +53,7 @@ static void assertPtrContainsValue(const char *ptr, size_t size, char value)
   }
 }
 
-static void testGrowth(char *ptr)
+static void testGrowth(unsigned char *ptr)
 {
   size_t previous_size = 0;
   char previous_value = '\0';
@@ -71,7 +71,7 @@ static void testGrowth(char *ptr)
   }
 }
 
-static void testRandomly(char *ptr)
+static void testRandomly(unsigned char *ptr)
 {
   size_t previous_size = 0;
   char previous_value = '\0';
@@ -79,7 +79,7 @@ static void testRandomly(char *ptr)
   for(size_t counter = 0; counter < 1000; counter++)
   {
     const size_t size = sRand() % 3000 + 1;
-    const char *previous_ptr = ptr;
+    const unsigned char *previous_ptr = ptr;
 
     ptr = CR_EnsureCapacity(ptr, size);
     checkPtr(ptr);
@@ -101,13 +101,13 @@ static void testRandomly(char *ptr)
   }
 }
 
-static void testFailure(char *ptr)
+static void testFailure(unsigned char *ptr)
 {
   assert_error((ptr = CR_EnsureCapacity(ptr, 0)),
                "unable to allocate 0 bytes");
 }
 
-static void testOverflow(char *ptr)
+static void testOverflow(unsigned char *ptr)
 {
   assert_error((ptr = CR_EnsureCapacity(ptr, SIZE_MAX)),
                "overflow calculating object size");

@@ -254,7 +254,7 @@ int main(void)
 
     /* Allocate some data and attach it to a region. Valgrind will detect
        if it leaks. */
-    char *data = malloc(182);
+    void *data = malloc(182);
     assert_true(data != NULL);
     CR_RegionAttach(r1, free, data);
 
