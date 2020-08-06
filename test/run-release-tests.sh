@@ -104,6 +104,8 @@ run_cppcheck()
 {
   ! cppcheck --quiet --std=c99 --enable=all "$@" -Isrc/ src/ test/ \
     --suppress="missingIncludeSystem:*" \
+    --suppress="nullPointerRedundantCheck:*" \
+    --suppress="nullPointerArithmeticRedundantCheck:*" \
     --suppress="redundantAssignment:test/*.c" |&
     grep --color=auto .
 }
